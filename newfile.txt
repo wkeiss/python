@@ -1,0 +1,283 @@
+1. Whetting Your Appetite — Python 3.8.4 documentation
+1. Whetting Your Appetite — Python 3.8.4 documentation
+HOWTO Fetch Internet Resources Using The urllib Package — Python 3.8.4 documentation
+Navigation
+HOWTO Fetch Internet Resources Using The urllib Package — Python 3.8.4 documentation
+Navigation
+Navigation
+index
+Navigation
+index
+index
+modules |
+index
+modules |
+modules |
+next |
+modules |
+next |
+next |
+previous |
+next |
+previous |
+previous |
+Python »
+previous |
+Python »
+Python »
+3.8.4 Documentation »
+Python »
+3.8.4 Documentation »
+3.8.4 Documentation »
+The Python Tutorial »
+3.8.4 Documentation »
+The Python Tutorial »
+Python HOWTOs »
+|
+Python HOWTOs »
+|
+|
+1. Whetting Your Appetite¶
+HOWTO Fetch Internet Resources Using The urllib Package¶
+If you do much work on computers, eventually you find that there’s some task
+Author
+you’d like to automate.
+Michael Foord
+For example, you may wish to perform a
+Note
+search-and-replace over a large number of text files, or rename and rearrange a
+There is a French translation of an earlier revision of this
+bunch of photo files in a complicated way. Perhaps you’d like to write a small
+HOWTO, available at urllib2 - Le Manuel manquant.
+custom database, or a specialized GUI application, or a simple game.
+Introduction¶
+If you’re a professional software developer, you may have to work with several
+Related Articles
+C/C++/Java libraries but find the usual write/compile/test/re-compile cycle is
+You may also find useful the following article on fetching web resources
+too slow.
+with Python:
+Perhaps you’re writing a test suite for such a library and find
+Basic Authentication
+writing the testing code a tedious task.
+A tutorial on Basic Authentication, with examples in Python.
+Or maybe you’ve written a program that
+urllib.request is a Python module for fetching URLs
+could use an extension language, and you don’t want to design and implement a
+(Uniform Resource Locators). It offers a very simple interface, in the form of
+whole new language for your application.
+the urlopen function. This is capable of fetching URLs using a variety of
+Python is just the language for you.
+different protocols. It also offers a slightly more complex interface for
+You could write a Unix shell script or Windows batch files for some of these
+handling common situations - like basic authentication, cookies, proxies and so
+tasks, but shell scripts are best at moving around files and changing text data,
+on. These are provided by objects called handlers and openers.
+not well-suited for GUI applications or games. You could write a C/C++/Java
+urllib.request supports fetching URLs for many “URL schemes” (identified by the string
+program, but it can take a lot of development time to get even a first-draft
+before the ":" in URL - for example "ftp" is the URL scheme of
+program.
+"ftp://python.org/") using their associated network protocols (e.g. FTP, HTTP).
+Python is simpler to use, available on Windows, Mac OS X, and Unix
+This tutorial focuses on the most common case, HTTP.
+operating systems, and will help you get the job done more quickly.
+For straightforward situations urlopen is very easy to use. But as soon as you
+Python is simple to use, but it is a real programming language, offering much
+encounter errors or non-trivial cases when opening HTTP URLs, you will need some
+more structure and support for large programs than shell scripts or batch files
+understanding of the HyperText Transfer Protocol. The most comprehensive and
+can offer.
+authoritative reference to HTTP is RFC 2616. This is a technical document and
+On the other hand, Python also offers much more error checking than
+not intended to be easy to read. This HOWTO aims to illustrate using urllib,
+C, and, being a very-high-level language, it has high-level data types built
+with enough detail about HTTP to help you through. It is not intended to replace
+in, such as flexible arrays and dictionaries.
+the urllib.request docs, but is supplementary to them.
+Because of its more general data
+Fetching URLs¶
+types Python is applicable to a much larger problem domain than Awk or even
+The simplest way to use urllib.request is as follows:
+Perl, yet many things are at least as easy in Python as in those languages.
+import urllib.request
+Python allows you to split your program into modules that can be reused in other
+with urllib.request.urlopen('http://python.org/') as response:
+Python programs.
+html = response.read()
+It comes with a large collection of standard modules that you
+If you wish to retrieve a resource via URL and store it in a temporary
+can use as the basis of your programs — or as examples to start learning to
+location, you can do so via the shutil.copyfileobj() and
+program in Python.
+tempfile.NamedTemporaryFile() functions:
+Some of these modules provide things like file I/O, system
+import shutil
+calls, sockets, and even interfaces to graphical user interface toolkits like
+import tempfile
+Tk.
+import urllib.request
+Python allows you to split your program into modules that can be reused in other
+with urllib.request.urlopen('http://python.org/') as response:
+Python programs.
+with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+The
+shutil.copyfileobj(response, tmp_file)
+interpreter can be used interactively, which makes it easy to experiment with
+with open(tmp_file.name) as html:
+features of the language, to write throw-away programs, or to test functions
+pass
+during bottom-up program development. It is also a handy desk calculator.
+Many uses of urllib will be that simple (note that instead of an ‘http:’ URL we
+Python enables programs to be written compactly and readably.
+could have used a URL starting with ‘ftp:’, ‘file:’, etc.).
+Programs written
+However, it’s the
+in Python are typically much shorter than equivalent C,
+purpose of this tutorial to explain the more complicated cases, concentrating on
+C++, or Java programs,
+HTTP.
+for several reasons:
+HTTP is based on requests and responses - the client makes requests and servers
+the high-level data types allow you to express complex operations in a single
+send responses. urllib.request mirrors this with a Request object which represents
+statement;
+the HTTP request you are making. In its simplest form you create a Request
+statement grouping is done by indentation instead of beginning and ending
+object that specifies the URL you want to fetch. Calling urlopen with this
+brackets;
+Request object returns a response object for the URL requested. This response is
+no variable or argument declarations are necessary.
+a file-like object, which means you can for example call .read() on the
+Python is extensible: if you know how to program in C it is easy to add a new
+response:
+built-in function or module to the interpreter, either to perform critical
+import urllib.request
+Python allows you to split your program into modules that can be reused in other
+req = urllib.request.Request('http://www.voidspace.org.uk')
+only be available in binary form (such as a vendor-specific graphics library).
+with urllib.request.urlopen(req) as response:
+Once you are really hooked, you can link the Python interpreter into an
+the_page = response.read()
+application written in C and use it as an extension or command language for that
+Note that urllib.request makes use of the same Request interface to handle all URL
+application.
+schemes.
+By the way, the language is named after the BBC show “Monty Python’s Flying
+For example, you can make an FTP request like so:
+Circus” and has nothing to do with reptiles.
+req = urllib.request.Request('ftp://example.com/')
+Making references to Monty
+In the case of HTTP, there are two extra things that Request objects allow you
+Python skits in documentation is not only allowed, it is encouraged!
+to do: First, you can pass data to be sent to the server.
+Now that you are all excited about Python, you’ll want to examine it in some
+Second, you can pass
+more detail.
+extra information (“metadata”) about the data or the about request itself, to
+Since the best way to learn a language is to use it, the tutorial
+the server - this information is sent as HTTP “headers”.
+invites you to play with the Python interpreter as you read.
+Let’s look at each of
+In the next chapter, the mechanics of using the interpreter are explained.
+these in turn.
+This
+Data¶
+is rather mundane information, but essential for trying out the examples shown
+Sometimes you want to send data to a URL (often the URL will refer to a CGI
+later.
+(Common Gateway Interface) script or other web application). With HTTP,
+The rest of the tutorial introduces various features of the Python language and
+this is often done using what’s known as a POST request. This is often what
+system through examples, beginning with simple expressions, statements and data
+your browser does when you submit a HTML form that you filled in on the web. Not
+types, through functions and modules, and finally touching upon advanced
+all POSTs have to come from forms: you can use a POST to transmit arbitrary data
+concepts like exceptions and user-defined classes.
+to your own application. In the common case of HTML forms, the data needs to be
+Previous topic
+encoded in a standard way, and then passed to the Request object as the data
+The Python Tutorial
+argument. The encoding is done using a function from the urllib.parse
+Next topic
+library.
+2. Using the Python Interpreter
+import urllib.parse
+This Page
+import urllib.request
+Python allows you to split your program into modules that can be reused in other
+url = 'http://www.someserver.com/cgi-bin/register.cgi'
+Show Source
+with urllib.request.urlopen(req) as response:
+Once you are really hooked, you can link the Python interpreter into an
+the_page = response.read()
+application written in C and use it as an extension or command language for that
+forms - see HTML Specification, Form Submission for more
+© Copyright 2001-2020, Python Software Foundation.
+details).
+The Python Software Foundation is a non-profit corporation.
+If you do not pass the data argument, urllib uses a GET request. One
+Please donate.
+way in which GET and POST requests differ is that POST requests often have
+Last updated on Jul 19, 2020.
+“side-effects”: they change the state of the system in some way (for example by
+Found a bug?
+placing an order with the website for a hundredweight of tinned spam to be
+Created using Sphinx 2.3.1.import urllib.parse
+This Page
+import urllib.request
+Python allows you to split your program into modules that can be reused in other
+url = 'http://www.someserver.com/cgi-bin/register.cgi'
+Show Source
+with urllib.request.urlopen(req) as response:
+Once you are really hooked, you can link the Python interpreter into an
+the_page = response.read()
+application written in C and use it as an extension or command language for that
+Note
+search-and-replace over a large number of text files, or rename and rearrange a
+Note
+search-and-replace over a large number of text files, or rename and rearrange a
+Note
+search-and-replace over a large number of text files, or rename and rearrange a
+Note
+search-and-replace over a large number of text files, or rename and rearrange a
+import urllib.request
+Python allows you to split your program into modules that can be reused in other
+req = urllib.request.Request('http://www.voidspace.org.uk')
+only be available in binary form (such as a vendor-specific graphics library).
+Basic Authentication
+writing the testing code a tedious task.
+Navigation
+index
+Navigation
+index
+index
+modules |
+index
+modules |
+modules |
+next |
+modules |
+next |
+next |
+previous |
+next |
+previous |
+previous |
+Python »
+previous |
+Python »
+Python »
+3.8.4 Documentation »
+Python »
+3.8.4 Documentation »
+3.8.4 Documentation »
+The Python Tutorial »
+3.8.4 Documentation »
+The Python Tutorial »
+Python HOWTOs »
+|
+Python HOWTOs »
+|
+|
+1. Whetting Your Appetite¶
